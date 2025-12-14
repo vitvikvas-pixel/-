@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Історичний Конвертер Чисел</title>
+    <!-- Google Fonts for historical feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+Egyptian+Hieroglyphs&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'papyrus-light': '#fdf6e3',
+                        'papyrus-dark': '#e6d2b5',
+                        'ink-black': '#2c241b',
+                        'gold-accent': '#c5a059',
+                        'clay-red': '#8a4b38',
+                    },
+                    fontFamily: {
+                        'cinzel': ['"Cinzel"', 'serif'],
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'egyptian': ['"Noto Sans Egyptian Hieroglyphs"', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'parchment': "url('https://www.transparenttextures.com/patterns/aged-paper.png')",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e6d2b5;
+            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+        }
+        
+        .historical-border {
+            border: 4px double #8a4b38;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .input-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .input-card:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(138, 75, 56, 0.2);
+            border-color: #c5a059;
+        }
+
+        /* Custom scrollbar for output areas */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #fdf6e3; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #8a4b38; 
+            border-radius: 4px;
+        }
+        
+        /* Egyptian text size adjustment */
+        .hieroglyphs {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            letter-spacing: 0.1em;
+            font-weight: 700; /* Зроблено жирнішим для кращої видимості */
+        }
+    </style>
+</head>
+<body class="min-h-screen text-ink-black flex flex-col items-center justify-center p-4">
+
+    <!-- Header -->
+    <header class="text-center mb-10 max-w-2xl">
+        <h1 class="font-cinzel text-4xl md:text-5xl font-bold text-clay-red mb-2 drop-shadow-sm">
+            Часопис Чисел
+        </h1>
+        <p class="font-playfair italic text-lg opacity-80">
+            Конвертер числових систем стародавнього світу
+        </p>
+        <div class="h-1 w-32 bg-clay-red mx-auto mt-4 rounded-full"></div>
+    </header>
+
+    <!-- Main Converter Area -->
+    <main class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Arabic Section -->
+        <div class="input-card bg-papyrus-light p-6 rounded-lg historical-border relative group">
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-clay-red text-papyrus-light px-4 py-1 rounded shadow font-cinzel text-sm uppercase tracking-wider">
+                Арабські
+            </div>
+            <div class="mt-4 flex flex-col h-full">
+                <label for="arabicInput" class="sr-only">Арабські числа</label>
+                <input 
+                    type="number" 
+                    id="arabicInput" 
+                    placeholder="123"
+                    class="w-full h-40 bg-transparent text-center text-5xl font-playfair border-none focus:ring-0 placeholder-gray-400 opacity-90 outline-none"
+                    oninput="convertFromArabic(this.value)"
+                >
+                <div class="text-center text-xs opacity-50 mt-auto font-sans">
+                    Введіть число тут (0 - 3999)
+                </div>
+            </div>
+        </div>
+
+        <!-- Roman Section -->
+        <div class="input-card bg-papyrus-light p-6 rounded-lg historical-border relative group">
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-ink-black text-papyrus-light px-4 py-1 rounded shadow font-cinzel text-sm uppercase tracking-wider">
+                Римські
+            </div>
+            <div class="mt-4 flex flex-col h-full">
+                <label for="romanInput" class="sr-only">Римські числа</label>
+                <input 
+                    type="text" 
+                    id="romanInput" 
+                    placeholder="CXXIII"
+                    class="w-full h-40 bg-transparent text-center text-4xl font-cinzel border-none focus:ring-0 placeholder-gray-400 uppercase outline-none"
+                    oninput="convertFromRoman(this.value)"
+                >
+                <div class="text-center text-xs opacity-50 mt-auto font-sans">
+                    Можна вводити (I, V, X, L, C, D, M)
+                </div>
+            </div>
+        </div>
+
+        <!-- Egyptian Section -->
+        <div class="input-card bg-papyrus-light p-6 rounded-lg historical-border relative">
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gold-accent text-ink-black px-4 py-1 rounded shadow font-cinzel text-sm uppercase tracking-wider font-bold">
+                Давньоєгипетські
+            </div>
+            <div class="mt-4 flex flex-col h-full justify-center items-center">
+                <div 
+                    id="egyptianDisplay" 
+                    class="w-full h-40 flex items-center justify-center text-center hieroglyphs font-egyptian overflow-x-auto overflow-y-hidden whitespace-nowrap text-clay-red"
+                >
+                    <!-- Hieroglyphs will appear here -->
+                    𓍢𓎆𓎆𓏺𓏺𓏺
+                </div>
+                <div class="text-center text-xs opacity-50 mt-auto font-sans">
+                    Тільки для відображення
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Error/Info Message -->
+    <div id="messageBox" class="mt-8 text-clay-red font-playfair font-bold text-lg h-6 opacity-0 transition-opacity duration-300">
+        <!-- Messages go here -->
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // DOM Elements
+        const arabicInput = document.getElementById('arabicInput');
+        const romanInput = document.getElementById('romanInput');
+        const egyptianDisplay = document.getElementById('egyptianDisplay');
+        const messageBox = document.getElementById('messageBox');
+
+        // Constants
+        const MAX_ROMAN = 3999;
+        const MAX_EGYPTIAN = 1000000; // Egyptian system goes higher, but logic gets complex
+
+        // --- Logic: Arabic to Roman ---
+        function toRoman(num) {
+            if (num < 1) return "";
+            if (num > MAX_ROMAN) return "MAX";
+            
+            const romanNumerals = [
+                { value: 1000, symbol: "M" },
+                { value: 900, symbol: "CM" },
+                { value: 500, symbol: "D" },
+                { value: 400, symbol: "CD" },
+                { value: 100, symbol: "C" },
+                { value: 90, symbol: "XC" },
+                { value: 50, symbol: "L" },
+                { value: 40, symbol: "XL" },
+                { value: 10, symbol: "X" },
+                { value: 9, symbol: "IX" },
+                { value: 5, symbol: "V" },
+                { value: 4, symbol: "IV" },
+                { value: 1, symbol: "I" }
+            ];
+
+            let result = '';
+            for (const numeral of romanNumerals) {
+                while (num >= numeral.value) {
+                    result += numeral.symbol;
+                    num -= numeral.value;
+                }
+            }
+            return result;
+        }
+
+        // --- Logic: Roman to Arabic ---
+        function fromRoman(str) {
+            str = str.toUpperCase();
+            const romanMap = {
+                'I': 1, 'V': 5, 'X': 10, 'L': 50,
+                'C': 100, 'D': 500, 'M': 1000
+            };
+            
+            let result = 0;
+            
+            for (let i = 0; i < str.length; i++) {
+                const current = romanMap[str[i]];
+                const next = romanMap[str[i + 1]];
+
+                if (current === undefined) return null; // Invalid char
+
+                if (next && current < next) {
+                    result -= current;
+                } else {
+                    result += current;
+                }
+            }
+            return result;
+        }
+
+        // --- Logic: Arabic to Egyptian Hieroglyphs ---
+        function toEgyptian(num) {
+            if (num < 1) return "";
+            if (num > 9999999) return "Too Large"; // God Heh is usually million
+
+            // Egyptian numerals mapping (Unicode)
+            // 1: 𓏺 (Stroke)
+            // 10: 𓎆 (Cattle hobble)
+            // 100: 𓍢 (Coil of rope)
+            // 1000: 𓆼 (Water lily)
+            // 10000: 𓂭 (Finger)
+            // 100000: 𓆐 (Tadpole)
+            // 1000000: 𓁨 (God Heh)
+            
+            const egyptianMap = [
+                { val: 1000000, sym: '𓁨' },
+                { val: 100000, sym: '𓆐' },
+                { val: 10000, sym: '𓂭' },
+                { val: 1000, sym: '𓆼' },
+                { val: 100, sym: '𓍢' },
+                { val: 10, sym: '𓎆' },
+                { val: 1, sym: '𓏺' }
+            ];
+
+            let result = '';
+            let remaining = num;
+
+            for (const item of egyptianMap) {
+                const count = Math.floor(remaining / item.val);
+                if (count > 0) {
+                    // Grouping for better display? Ancient Egyptians grouped, 
+                    // but linear repetition is standard for unicode rendering logic.
+                    // We simply repeat the character 'count' times.
+                    result += item.sym.repeat(count); 
+                    remaining %= item.val;
+                    
+                    // Add a tiny space for readability between groups
+                    if (remaining > 0) result += ' '; 
+                }
+            }
+            return result;
+        }
+
+        // --- Event Handlers ---
+
+        function showMessage(msg) {
+            messageBox.textContent = msg;
+            messageBox.style.opacity = msg ? '1' : '0';
+        }
+
+        function convertFromArabic(value) {
+            let num = parseInt(value);
+            
+            if (isNaN(num) || value === '') {
+                romanInput.value = '';
+                egyptianDisplay.textContent = '';
+                showMessage('');
+                return;
+            }
+
+            if (num < 1) {
+                showMessage('Число має бути більше 0');
+                romanInput.value = '';
+                egyptianDisplay.textContent = '';
+                return;
+            }
+
+            // Update Roman
+            if (num > MAX_ROMAN) {
+                romanInput.value = "---";
+                showMessage('Занадто велике для стандартних римських чисел');
+            } else {
+                romanInput.value = toRoman(num);
+                showMessage('');
+            }
+
+            // Update Egyptian
+            egyptianDisplay.textContent = toEgyptian(num);
+        }
+
+        function convertFromRoman(value) {
+            let str = value.trim();
+            if (str === '') {
+                arabicInput.value = '';
+                egyptianDisplay.textContent = '';
+                showMessage('');
+                return;
+            }
+
+            const num = fromRoman(str);
+
+            if (num === null) {
+                showMessage('Некоректний римський символ');
+                arabicInput.value = '?';
+                egyptianDisplay.textContent = '?';
+                return;
+            }
+
+            // Only update Arabic if valid
+            arabicInput.value = num;
+            egyptianDisplay.textContent = toEgyptian(num);
+            showMessage('');
+        }
+
+        // Initialize with placeholder demo
+        convertFromArabic(123);
+    </script>
+</body>
+</html>
